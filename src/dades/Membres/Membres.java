@@ -18,7 +18,7 @@ public abstract class Membres {
     private String correuElectronic; // Correu electrònic del membre
     private Data dataAlta; // Data d'alta del membre a l'associació
     private Data dataBaixa; // Data de baixa del membre
-    private String rol; //Rol del membre
+    private String titulacio; // Titulacio del membre
 
     /**
      * Constructor que inicialitza un membre amb alias, correu electrònic i data d'alta.
@@ -28,13 +28,13 @@ public abstract class Membres {
      * @param correuElectronic - Correu electrònic del membre.
      * @param dataAlta         - Data en què el membre s'ha donat d'alta.
      */
-    public Membres(String alias, String correuElectronic, Data dataAlta) {
+    public Membres(String alias, String correuElectronic, Data dataAlta, String titulacio) {
         try {
             this.alias = alias;
             this.correuElectronic = correuElectronic;
             this.dataAlta = dataAlta;
             dataBaixa = null;
-            this.rol = "Membre";
+            this.titulacio = titulacio;
         } catch (Exception e) {
             System.err.println("Error inicialitzant el membre: " + e.getMessage());
             throw new IllegalArgumentException("Dades inicials no vàlides");
@@ -98,12 +98,12 @@ public abstract class Membres {
      * 
      * @param rol - Nou valor per al rol del membre.
      */
-    public void setRol(String rol) {
+    public void setTitulacio(String titulacio) {
         try {
-            if (rol == null || rol.isEmpty()) {
-                throw new IllegalArgumentException("El rol no pot ser nul o buit.");
+            if (titulacio == null || titulacio.isEmpty()) {
+                throw new IllegalArgumentException("La titulacio no pot ser nul o buit.");
             }
-            this.rol = rol;
+            this.titulacio = titulacio;
         } catch (Exception e) {
             System.err.println("Error assignant el rol: " + e.getMessage());
         }
@@ -167,8 +167,8 @@ public abstract class Membres {
      * 
      * @return El valor del rol.
      */
-    public String getRol() {
-        return rol;
+    public String getTitulacio() {
+        return titulacio;
     }
 
     /**
@@ -182,7 +182,7 @@ public abstract class Membres {
             return "Membre => alias=" + alias + ", correuElectronic=" + 
             correuElectronic + ", dataAlta=" + dataAlta + 
             ", dataBaixa=" + (dataBaixa != null ? dataBaixa : "Actiu") + 
-            ", rol=" + rol;
+            ", titulacio=" + titulacio;
         } catch (Exception e) {
             System.err.println("Error generant la representació textual: " + 
             e.getMessage());
