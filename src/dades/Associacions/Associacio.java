@@ -7,164 +7,169 @@ import dades.Membres.*;
 // TODO Explicaciones de los metodos correctas
 
 public class Associacio {
-    private final int MAXMEMBRES = 100;
-    private String nomAsociacio = null;
-    private String correuAsociacio = null;
+    private static final String[] TITULACIONS_VALIDES = {"GEB", "GEI", "GESST", "BioGEI", "DG GEB-GESST", "extern-ETSE"};
+    private String nom; // Nom de l'associació
+    private String correuContacte; // Correu electrònic de contacte
+    private String[] titulacions; // Titulacions associades a la associació
 
-    private Membres[] llistaM;
-    private Membres[] llistaA;
-    private int nMembresM;
-    private int nMembresA;
+    private LlistaMembres membres; // Llista de membres
 
-    private String[] carreras = {"GEB", "GEI", "GESST", "BioGEI", "DG GEB-GESST", "extern-ETSE"};
-    private String carrera = null;
+    private Alumnes president; // Alumne que ocupa el càrrec de president
+    private Alumnes secretari; // Alumne que ocupa el càrrec de secretari
+    private Alumnes tresorer; // Alumne que ocupa el càrrec de tresorer
 
+    public Associacio (String nom, String correuContacte, int maxMembres){
+        this.nom = nom;
+        this.correuContacte = correuContacte;
+        this.membres = new LlistaMembres(nom, maxMembres);
+        titulacions = new String[TITULACIONS_VALIDES.length];
+    }
+
+    //Setters
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setCorreuContacte(String correuContacte) {
+        this.correuContacte = correuContacte;
+    }
     
-    private String president;
-    private String secretari;
-    private String tresorer;
+    //Getters
+    public String getNom() {
+        return nom;
+    }
 
-    public Associacio (String nom, String correu, String carrera){
-        nomAsociacio = nom;
-        correuAsociacio = correu;
-        nMembresM = 0;
-        president = null;
-        secretari = null;
-        tresorer = null;
-        llistaM = new Membres[MAXMEMBRES];
-        llistaA = new Membres[MAXMEMBRES];
-        int i = 0;
-        boolean trobat = false;
-        while(i < carreras.length && !trobat){
-            if(carrera.equalsIgnoreCase(carreras[i])){
-                this.carrera = carrera;
-                trobat = true;
+    public String getCorreuContacte() {
+        return correuContacte;
+    }
+
+    public String[] getTitulacions() {
+        return titulacions;
+    }
+
+    public Alumnes getPresident() {
+        return president.copia();
+    }
+
+    public Alumnes getSecretari() {
+        return secretari.copia();
+    }
+
+    public Alumnes getTresorer() {
+        return tresorer.copia();
+    }
+
+    //Metodes auxiliars
+    private boolean esTitulacioValida(String titulacio) {
+        for (String valida : TITULACIONS_VALIDES) {
+            if (valida.equalsIgnoreCase(titulacio)) {
+                return true;
             }
-            i++;
         }
-        if(!trobat){
-            String aux = ", posibles carreres: ";
-                for(int j = 0; j < carreras.length; j++){
-                    if(j == carreras.length-1){
-                        aux += carreras[j] + ".";
-                    }else{
-                        aux += carreras[j] + ", ";
-                    }
+        return false;
+    }
+
+    private void validarAssignacio(Membres membre, String rol) {
+        if (!(membre instanceof Alumnes)) {
+            throw new IllegalArgumentException("Només un alumne pot ser " + rol + ".");
+        }
+        if (!membres.esta(membre)) {
+            throw new IllegalArgumentException("El " + rol + " ha de ser membre de l'associació.");
+        }
+    }
+
+    private boolean titulacioJaRegistrada(String titulacio) {
+        for (String tit : titulacions) {
+            if (tit != null && tit.equalsIgnoreCase(titulacio)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void afegirTitulacio(String titulacio) {
+        try {
+            if (titulacio == null || titulacio.isEmpty()) {
+                throw new IllegalArgumentException("La titulació no pot ser buida.");
+            }
+        
+            if (!esTitulacioValida(titulacio)) {
+                throw new IllegalArgumentException("Titulació no vàlida: " + titulacio);
+            }
+        
+            // Afegir titulació al primer espai lliure
+            for (int i = 0; i < titulacions.length; i++) {
+                if (titulacions[i] == null) {
+                    titulacions[i] = titulacio;
+                    return;
                 }
-                this.carrera = "¡Carrera Inexistente!" + aux;
-        }
-    }
-    @Override
-    public String toString() {
-        return "\nAsociacio: \n\tNom: " + nomAsociacio + "\n\tCorreu: " + correuAsociacio + "\n\tCarrera: " + carrera;
-    }
-
-    public String getNomAsociacio() {
-        return nomAsociacio;
-    }
-
-    public String getCorreuAsociacio() {
-        return correuAsociacio;
-    }
-
-    public String getCarrera() {
-        return carrera;
-    }
-
-    public String getPresident(){
-        return president;
-    }
-
-    public String getSecretari(){
-        return secretari;
-    }
-
-    public String getTresorer(){
-        return tresorer;
-    }
-
-    // Llista membres generica
-    public void assignarMembresALlistaM(Membres membre){
-        boolean miembroYaExiste = false;
-        int i = 0;
-        while(i < llistaA.length && miembroYaExiste == false){
-            if(llistaM[i].getAlias().equalsIgnoreCase(membre.getAlias())){
-                miembroYaExiste = true;
             }
-            else{
-                i++;
-            }
+            throw new IllegalStateException("No es poden afegir més titulacions.");
+        } catch (Exception e) {
+            System.err.println("Error afegint titulació: " + e.getMessage());
         }
-        if(!miembroYaExiste){
-            llistaM[nMembresM] = membre;
-        }
-        nMembresM++;
     }
 
-    // Llista membres alumne
-    public void assignarMembresALlistaA(Membres membre){
-        boolean miembroYaExiste = false;
-        int i = 0;
-        while(i < llistaA.length && miembroYaExiste == false){
-            if(llistaA[i].getAlias().equalsIgnoreCase(membre.getAlias()) && membre instanceof Alumnes){
-                miembroYaExiste = true;
-            }
-            else{
-                i++;
-            }
-        }
-        if(!miembroYaExiste && membre instanceof Alumnes){
-            llistaM[nMembresA] = membre;
-        }
-        nMembresA++;
-    }
+    public void afegirMembre(Membres membre) {
+        try {
+            membres.afegirMembre(membre); // Afegir membre a la llista
     
-    /*TODO Añadir que el presidente solo pueda añadirse si es alumno*/
-
-    public void assignarPresident(String nom){
-        boolean trobat = false;
-        int i = 0;
-        while(i < llistaA.length && trobat == false){
-            if(llistaA[i].getAlias().equalsIgnoreCase(nom)){
-                trobat = true;
-                president = nom;
+            if (membre instanceof Alumnes) {
+                String titulacio = ((Alumnes) membre).getEnsenyament();
+                if(!titulacioJaRegistrada(titulacio)) {
+                    afegirTitulacio(titulacio);
+                }
             }
-            else{
-                i++;
-            }
+        } catch (Exception e) {
+            System.err.println("Error afegint membre: " + e.getMessage());
         }
-    }
-    
-    /*TODO Añadir que el secretari solo pueda añadirse si es alumno*/
+    }    
 
-    public void assignarSecretari(String nom){
-        boolean trobat = false;
-        int i = 0;
-        while(i < llistaA.length && trobat == false){
-            if(llistaA[i].getAlias().equalsIgnoreCase(nom)){
-                trobat = true;
-                secretari = nom;
-            }
-            else{
-                i++;
-            }
-        }
+    // Métodos para asignar cargos
+    public void assignarPresident(Membres membre) {
+        validarAssignacio(membre, "president");
+         this.president = (Alumnes) membre.copia();
     }
 
-    /*TODO Añadir que el tresorer solo pueda añadirse si es alumno*/
+    public void assignarSecretari(Membres membre) {
+        validarAssignacio(membre, "secretari");
+        this.secretari = (Alumnes) membre.copia();
+    }
 
-    public void assignarTresorer(String nom){
-        boolean trobat = false;
-        int i = 0;
-        while(i < llistaA.length && trobat == false){
-            if(llistaA[i].getAlias().equalsIgnoreCase(nom)){
-                trobat = true;
-                tresorer = nom;
-            }
-            else{
-                i++;
-            }
+    public void assignarTresorer(Membres membre) {
+        validarAssignacio(membre, "tresorer");
+        this.tresorer = (Alumnes) membre.copia();
+    }
+
+    // Métodos para asignar cargos por alias 
+    // Implementar buscarPerAlias en llista membres
+    /*
+    public void assignarPresident(String alias) {
+        Membres membre = membres.buscarPerAlias(alias);
+        if (membre instanceof Alumnes) {
+            this.president = (Alumnes) membre;
+        } else {
+            throw new IllegalArgumentException("El president ha de ser un alumne i membre de l'associació.");
         }
     }
+
+    public void assignarSecretari(String alias) {
+        Membres membre = membres.buscarPerAlias(alias);
+        if (membre instanceof Alumnes) {
+            this.secretari = (Alumnes) membre;
+        } else {
+            throw new IllegalArgumentException("El secretari ha de ser un alumne i membre de l'associació.");
+        }
+    }
+
+    public void assignarTresorer(String alias) {
+        Membres membre = membres.buscarPerAlias(alias);
+        if (membre instanceof Alumnes) {
+            this.tresorer = (Alumnes) membre;
+        } else {
+            throw new IllegalArgumentException("El tresorer ha de ser un alumne i membre de l'associació.");
+        }
+    }
+    */
 }
 

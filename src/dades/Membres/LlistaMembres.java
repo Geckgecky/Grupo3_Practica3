@@ -30,7 +30,7 @@ public class LlistaMembres {
      * @param dimensio - Nombre màxim de membres que pot contenir la llista.
      */
     public LlistaMembres (String nom, int dimensio){
-        this.nomLlista = nom;
+        this.nomLlista = "Llista de "+ nom;
         nMembres = 0;
         this.llista = new Membres[dimensio];
     }

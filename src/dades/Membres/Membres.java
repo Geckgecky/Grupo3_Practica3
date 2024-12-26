@@ -19,6 +19,7 @@ public abstract class Membres {
     private Data dataAlta; // Data d'alta del membre a l'associació
     private Data dataBaixa; // Data de baixa del membre
     private String titulacio; // Titulacio del membre
+    private int participacions;
 
     /**
      * Constructor que inicialitza un membre amb alias, correu electrònic i data d'alta.
